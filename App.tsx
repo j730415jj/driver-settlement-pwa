@@ -426,8 +426,11 @@ const App: React.FC = () => {
   const filteredNavItems = NAV_ITEMS.filter(item => item.roles.includes(user?.role || ''));
   const finalNavItems = user?.role === 'ADMIN' ? [{ label: '대시보드', value: ViewType.DASHBOARD, category: '목록관리', roles: ['ADMIN'] }, ...filteredNavItems] : filteredNavItems;
 
-  return (
+return (
     <div className={`h-screen flex flex-col transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-950' : 'bg-slate-100'} overflow-hidden`}>
+      
+      <style>{globalStyle}</style>
+
       {user && <Header user={user} onLogout={handleLogout} onUpdatePassword={(c, n) => {
         if (!user) return false;
         if (user.role === 'ADMIN') {
@@ -446,7 +449,8 @@ const App: React.FC = () => {
         }
         return false;
       }} isDarkMode={isDarkMode} onToggleTheme={toggleTheme} />}
-      <div className="flex flex-1 overflow-hidden">
+      
+      <div className="flex flex-1 overflow-hidden flex-col md:flex-row">
         {user && (
           <>
             <Sidebar currentView={currentView} onViewChange={setCurrentView} navItems={finalNavItems} width={leftSidebarWidth} />
@@ -464,6 +468,5 @@ const App: React.FC = () => {
       </div>
     </div>
   );
-};
 
 export default App;

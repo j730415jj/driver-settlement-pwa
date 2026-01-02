@@ -249,14 +249,12 @@ const AccountManagementView: React.FC<Props> = ({
                     {editingPwId === v.id ? (
                       <div className="flex items-center justify-center space-x-2">
                         <input 
-// 254번 줄 근처 input 태그 수정
 <input 
   type="text" 
   value={tempPw} 
   onChange={e => setTempPw(e.target.value)}
-  /* 글씨를 키우고(text-lg), 테두리와 글자를 검정색(black)으로 변경했습니다 */
   className="border-2 border-black rounded-lg px-3 py-2 text-lg text-black font-bold outline-none w-40"
-  style={{ backgroundColor: 'white', color: 'black' }} /* 배경 하얗게, 글자 검정 확실히 */
+  style={{ backgroundColor: 'white', color: 'black' }}
   autoFocus 
 />
                         <button onClick={() => saveEditedPw('VEHICLE', v.id)} className="bg-blue-600 text-white p-1.5 rounded-lg hover:bg-blue-700 transition">
@@ -275,14 +273,13 @@ const AccountManagementView: React.FC<Props> = ({
                   </td>
                   <td className="px-8 py-5 text-center">
                     <div className="flex justify-center space-x-2">
-{/* 274번 줄 근처: 기존 버튼 지우고 이걸 넣으세요 */}
 <button
   onClick={() => startEditPw(v.id, v.password)}
   className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
   style={{ fontSize: '15px', fontWeight: 'bold', minWidth: '70px' }}
 >
   비번변경
-</button>                      
+</button>                     
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
                       </button>
                       <button 

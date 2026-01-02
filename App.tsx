@@ -1,47 +1,24 @@
-/* 기사님 모바일 화면: 메뉴를 위로 올리고 화면을 넓게 쓰기 */
+/* Mobile Layout Fixed */
 const globalStyle = `
   @media (max-width: 600px) {
-    /* 1. 전체 화면 구조를 '위-아래'로 변경 */
-    #root { 
-      flex-direction: column !important; 
-    }
-    
-    /* 2. 왼쪽 메뉴(aside)를 상단 가로 바(Bar)로 변경 */
+    #root { flex-direction: column !important; }
     aside {
-      width: 100% !important;
-      height: auto !important;
-      min-height: 60px !important;
-      padding: 5px !important;
-      border-right: none !important;
-      border-bottom: 2px solid #ddd !important;
+      width: 100% !important; height: auto !important; min-height: 60px !important;
+      padding: 5px !important; border-right: none !important; border-bottom: 2px solid #ddd !important;
     }
-    
-    /* 메뉴 아이콘들을 가로로 나열 */
-    aside nav {
-      flex-direction: row !important;
-      justify-content: space-around !important;
-      gap: 10px !important;
-    }
-
-    /* 3. 메인 작업창을 가로로 꽉 채우기 (이제 삭제버튼이 보입니다) */
-    main {
-      width: 100% !important;
-      padding: 10px !important;
-      overflow-x: auto !important;
-    }
-
-    /* 4. 글씨와 입력창은 계속 큼직하게 유지 */
+    aside nav { flex-direction: row !important; justify-content: space-around !important; gap: 10px !important; }
+    main { width: 100% !important; padding: 10px !important; overflow-x: auto !important; }
     body, html { font-size: 20px !important; }
     input, select { 
-      height: 55px !important;
-      font-size: 22px !important; 
-      color: black !important; 
-      border: 2px solid black !important;
+      height: 55px !important; font-size: 22px !important; 
+      color: black !important; border: 2px solid black !important; background-color: white !important;
     }
-    button { height: 60px !important; font-size: 20px !important; font-weight: bold !important; }
+    button { min-height: 60px !important; font-size: 20px !important; font-weight: bold !important; }
   }
 `;
-`;ort React, { useState, useEffect, useCallback, useRef } from 'react';
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { GoogleGenAI } from "@google/genai";
 import { GoogleGenAI } from "@google/genai";
 import { createClient } from '@supabase/supabase-js'; // Supabase 부품 추가
 import { ViewType, Operation, Client, Vehicle, AuthUser, Dispatch, AdminAccount, UnitPriceMaster, Snippet } from './types';

@@ -1,19 +1,35 @@
-/* 기사님들을 위한 왕글씨 스타일 */
+
+imp/* 기사님들을 위한 왕글씨 & 앱 고정 스타일 (수정본) */
 const globalStyle = `
   @media (max-width: 600px) {
-    body, html { font-size: 22px !important; }
+    body, html { 
+      font-size: 22px !important; 
+      overflow: hidden !important; /* 4번: 화면 흔들림 방지 (스크롤 막기) */
+      overscroll-behavior: none !important; /* 4번: 당겨서 새로고침 등 막기 */
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* 2번: 비밀번호/입력창 글씨 진하게 */
+    input, select { 
+      height: 60px !important; 
+      font-size: 24px !important; 
+      color: #000000 !important; /* 글자색 완전 검정 */
+      -webkit-text-fill-color: #000000 !important; /* 아이폰 호환 */
+      opacity: 1 !important; 
+      font-weight: bold !important;
+      background-color: #ffffff !important;
+      border: 2px solid #000 !important; /* 테두리도 진하게 */
+    }
+
     button { 
       height: 70px !important; 
       font-size: 24px !important; 
       font-weight: bold !important; 
     }
-    input, select { 
-      height: 60px !important; 
-      font-size: 20px !important; 
-    }
   }
-`;
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+`;ort React, { useState, useEffect, useCallback, useRef } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { createClient } from '@supabase/supabase-js'; // Supabase 부품 추가
 import { ViewType, Operation, Client, Vehicle, AuthUser, Dispatch, AdminAccount, UnitPriceMaster, Snippet } from './types';

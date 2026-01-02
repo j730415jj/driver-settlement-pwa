@@ -31,7 +31,7 @@ const AccountManagementView: React.FC<Props> = ({
   const [vehicleFormData, setVehicleFormData] = useState<Partial<Vehicle>>({
     vehicleNo: '',
     loginCode: '',
-    password: ''
+    password: '0000'
   });
   
   const [newAdminData, setNewAdminData] = useState<Partial<AdminAccount>>({
@@ -249,12 +249,15 @@ const AccountManagementView: React.FC<Props> = ({
                     {editingPwId === v.id ? (
                       <div className="flex items-center justify-center space-x-2">
                         <input 
-                          type="text" 
-                          value={tempPw} 
-                          onChange={e => setTempPw(e.target.value)}
-                          className="border border-blue-300 rounded-lg px-3 py-1 text-xs outline-none focus:ring-2 focus:ring-blue-200 w-32 font-bold"
-                          autoFocus
-                        />
+// 254번 줄 근처 input 태그 수정
+<input
+  type="text"
+  value={tempPw}
+  onChange={(e) => setTempPw(e.target.value)}
+  className="border-2 border-black text-black font-bold p-1 rounded" // 테두리 진하게, 글자 검정색
+  style={{ fontSize: '18px', backgroundColor: 'white', color: 'black' }} // 확실하게 스타일 지정
+  autoFocus
+/>
                         <button onClick={() => saveEditedPw('VEHICLE', v.id)} className="bg-blue-600 text-white p-1.5 rounded-lg hover:bg-blue-700 transition">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                         </button>
@@ -271,11 +274,14 @@ const AccountManagementView: React.FC<Props> = ({
                   </td>
                   <td className="px-8 py-5 text-center">
                     <div className="flex justify-center space-x-2">
-                      <button 
-                        onClick={() => startEditPw(v.id, v.password || '')}
-                        className="text-slate-400 hover:text-blue-600 p-2 rounded-xl hover:bg-blue-50 transition-all"
-                        title="비밀번호 수정"
-                      >
+{/* 274번 줄 근처: 기존 버튼 지우고 이걸 넣으세요 */}
+<button
+  onClick={() => startEditPw(v.id, v.password)}
+  className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
+  style={{ fontSize: '15px', fontWeight: 'bold', minWidth: '70px' }}
+>
+  비번변경
+</button>                      
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
                       </button>
                       <button 

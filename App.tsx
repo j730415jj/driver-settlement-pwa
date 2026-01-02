@@ -1,4 +1,4 @@
-/* Mobile Layout Fixed */
+/* Mobile Layout Fixed: 모바일에서 메뉴 위로 올리기 */
 const globalStyle = `
   @media (max-width: 600px) {
     #root { flex-direction: column !important; }
@@ -19,9 +19,10 @@ const globalStyle = `
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { GoogleGenAI } from "@google/genai";
-import { GoogleGenAI } from "@google/genai";
-import { createClient } from '@supabase/supabase-js'; // Supabase 부품 추가
+import { createClient } from '@supabase/supabase-js'; 
 import { ViewType, Operation, Client, Vehicle, AuthUser, Dispatch, AdminAccount, UnitPriceMaster, Snippet } from './types';
+import { NAV_ITEMS, MOCK_OPERATIONS, MOCK_CLIENTS, MOCK_VEHICLES, MOCK_ADMINS, MOCK_UNIT_PRICES, MOCK_SNIPPETS } from './constants';
+// ... 아래 코드는 그대로 두세요 ...
 import { NAV_ITEMS, MOCK_OPERATIONS, MOCK_CLIENTS, MOCK_VEHICLES, MOCK_ADMINS, MOCK_UNIT_PRICES, MOCK_SNIPPETS } from './constants';
 import OperationEntryView from './components/OperationEntryView';
 import ClientSummaryView from './components/ClientSummaryView';

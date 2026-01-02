@@ -250,13 +250,14 @@ const AccountManagementView: React.FC<Props> = ({
                       <div className="flex items-center justify-center space-x-2">
                         <input 
 // 254번 줄 근처 input 태그 수정
-<input
-  type="text"
-  value={tempPw}
-  onChange={(e) => setTempPw(e.target.value)}
-  className="border-2 border-black text-black font-bold p-1 rounded" // 테두리 진하게, 글자 검정색
-  style={{ fontSize: '18px', backgroundColor: 'white', color: 'black' }} // 확실하게 스타일 지정
-  autoFocus
+<input 
+  type="text" 
+  value={tempPw} 
+  onChange={e => setTempPw(e.target.value)}
+  /* 글씨를 키우고(text-lg), 테두리와 글자를 검정색(black)으로 변경했습니다 */
+  className="border-2 border-black rounded-lg px-3 py-2 text-lg text-black font-bold outline-none w-40"
+  style={{ backgroundColor: 'white', color: 'black' }} /* 배경 하얗게, 글자 검정 확실히 */
+  autoFocus 
 />
                         <button onClick={() => saveEditedPw('VEHICLE', v.id)} className="bg-blue-600 text-white p-1.5 rounded-lg hover:bg-blue-700 transition">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
@@ -311,12 +312,14 @@ const AccountManagementView: React.FC<Props> = ({
                     {editingPwId === a.id ? (
                       <div className="flex items-center justify-center space-x-2">
                         <input 
-                          type="text" 
-                          value={tempPw} 
-                          onChange={e => setTempPw(e.target.value)}
-                          className="border border-indigo-300 rounded-lg px-3 py-1 text-xs outline-none focus:ring-2 focus:ring-indigo-200 w-40 font-bold"
-                          autoFocus
-                        />
+  type="text" 
+  value={tempPw} 
+  onChange={e => setTempPw(e.target.value)}
+  /* 글씨를 키우고(text-lg), 테두리와 글자를 검정색(black)으로 변경했습니다 */
+  className="border-2 border-black rounded-lg px-3 py-2 text-lg text-black font-bold outline-none w-40"
+  style={{ backgroundColor: 'white', color: 'black' }} /* 배경 하얗게, 글자 검정 확실히 */
+  autoFocus 
+/>
                         <button onClick={() => saveEditedPw('ADMIN', a.id)} className="bg-indigo-600 text-white p-1.5 rounded-lg hover:bg-indigo-700 transition">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                         </button>

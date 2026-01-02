@@ -1,34 +1,46 @@
-
-imp/* 기사님들을 위한 왕글씨 & 앱 고정 스타일 (수정본) */
+/* 기사님 모바일 화면: 메뉴를 위로 올리고 화면을 넓게 쓰기 */
 const globalStyle = `
   @media (max-width: 600px) {
-    body, html { 
-      font-size: 22px !important; 
-      overflow: hidden !important; /* 4번: 화면 흔들림 방지 (스크롤 막기) */
-      overscroll-behavior: none !important; /* 4번: 당겨서 새로고침 등 막기 */
-      position: fixed;
-      width: 100%;
-      height: 100%;
+    /* 1. 전체 화면 구조를 '위-아래'로 변경 */
+    #root { 
+      flex-direction: column !important; 
     }
     
-    /* 2번: 비밀번호/입력창 글씨 진하게 */
-    input, select { 
-      height: 60px !important; 
-      font-size: 24px !important; 
-      color: #000000 !important; /* 글자색 완전 검정 */
-      -webkit-text-fill-color: #000000 !important; /* 아이폰 호환 */
-      opacity: 1 !important; 
-      font-weight: bold !important;
-      background-color: #ffffff !important;
-      border: 2px solid #000 !important; /* 테두리도 진하게 */
+    /* 2. 왼쪽 메뉴(aside)를 상단 가로 바(Bar)로 변경 */
+    aside {
+      width: 100% !important;
+      height: auto !important;
+      min-height: 60px !important;
+      padding: 5px !important;
+      border-right: none !important;
+      border-bottom: 2px solid #ddd !important;
+    }
+    
+    /* 메뉴 아이콘들을 가로로 나열 */
+    aside nav {
+      flex-direction: row !important;
+      justify-content: space-around !important;
+      gap: 10px !important;
     }
 
-    button { 
-      height: 70px !important; 
-      font-size: 24px !important; 
-      font-weight: bold !important; 
+    /* 3. 메인 작업창을 가로로 꽉 채우기 (이제 삭제버튼이 보입니다) */
+    main {
+      width: 100% !important;
+      padding: 10px !important;
+      overflow-x: auto !important;
     }
+
+    /* 4. 글씨와 입력창은 계속 큼직하게 유지 */
+    body, html { font-size: 20px !important; }
+    input, select { 
+      height: 55px !important;
+      font-size: 22px !important; 
+      color: black !important; 
+      border: 2px solid black !important;
+    }
+    button { height: 60px !important; font-size: 20px !important; font-weight: bold !important; }
   }
+`;
 `;ort React, { useState, useEffect, useCallback, useRef } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { createClient } from '@supabase/supabase-js'; // Supabase 부품 추가

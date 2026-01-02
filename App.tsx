@@ -1,3 +1,18 @@
+/* 기사님들을 위한 왕글씨 스타일 */
+const globalStyle = `
+  @media (max-width: 600px) {
+    body, html { font-size: 22px !important; }
+    button { 
+      height: 70px !important; 
+      font-size: 24px !important; 
+      font-weight: bold !important; 
+    }
+    input, select { 
+      height: 60px !important; 
+      font-size: 20px !important; 
+    }
+  }
+`;
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { createClient } from '@supabase/supabase-js'; // Supabase 부품 추가

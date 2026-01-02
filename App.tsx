@@ -22,8 +22,6 @@ import { GoogleGenAI } from "@google/genai";
 import { createClient } from '@supabase/supabase-js'; 
 import { ViewType, Operation, Client, Vehicle, AuthUser, Dispatch, AdminAccount, UnitPriceMaster, Snippet } from './types';
 import { NAV_ITEMS, MOCK_OPERATIONS, MOCK_CLIENTS, MOCK_VEHICLES, MOCK_ADMINS, MOCK_UNIT_PRICES, MOCK_SNIPPETS } from './constants';
-// ... 아래 코드는 그대로 두세요 ...
-import { NAV_ITEMS, MOCK_OPERATIONS, MOCK_CLIENTS, MOCK_VEHICLES, MOCK_ADMINS, MOCK_UNIT_PRICES, MOCK_SNIPPETS } from './constants';
 import OperationEntryView from './components/OperationEntryView';
 import ClientSummaryView from './components/ClientSummaryView';
 import StatementView from './components/StatementView';
@@ -41,11 +39,11 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 
 // ▼▼▼▼▼▼▼▼▼▼ 사장님, 여기만 진짜 정보로 바꿔주세요! ▼▼▼▼▼▼▼▼▼▼
-const SUPABASE_URL = 'https://jvzeonopbybtqnyyboje.supabase.co.supabase.co';
+const SUPABASE_URL = 'https://jvzeonopbybtqnyyboje.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_CX1kIgpV8nNIQZJHJYEcBw_BRPzf3D8';
 // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-// Supabase 연결 (주소가 없으면 연결하지 않음)
+// Supabase 연결
 const supabase = (SUPABASE_URL.includes('여기에') || SUPABASE_KEY.includes('여기에')) 
   ? null 
   : createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -62,7 +60,6 @@ const App: React.FC = () => {
   const [leftSidebarWidth, setLeftSidebarWidth] = useState(240);
   const isResizingLeft = useRef(false);
 
-  // Sidebar resize handlers
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isResizingLeft.current) return;
@@ -90,7 +87,6 @@ const App: React.FC = () => {
     document.body.style.cursor = 'col-resize';
   };
 
-  // 알림 권한 요청
   useEffect(() => {
     if (typeof window !== 'undefined' && 'Notification' in window) {
       if (Notification.permission === 'default') {
@@ -146,7 +142,6 @@ const App: React.FC = () => {
     return saved ? JSON.parse(saved) : MOCK_ADMINS;
   });
 
-  // 90일 지난 사진 자동 삭제 기능 (로컬 데이터용)
   useEffect(() => {
     const cleanupOldPhotos = () => {
       const ninetyDaysAgo = new Date();
@@ -176,7 +171,6 @@ const App: React.FC = () => {
   useEffect(() => { localStorage.setItem('v_dispatches', JSON.stringify(dispatches)); }, [dispatches]);
   useEffect(() => { localStorage.setItem('v_admins', JSON.stringify(adminAccounts)); }, [adminAccounts]);
 
-  // AI 중량 추출 함수
   const extractWeightFromImage = async (base64Data: string): Promise<number | null> => {
     try {
       const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
@@ -203,30 +197,26 @@ const App: React.FC = () => {
     }
   };
 
-  // ★★★ [새 기능] 기사님이 찍은 사진을 Supabase(우체통)로 보내는 함수 ★★★
   const uploadPhotoToSupabase = async (id: string, base64Photo: string) => {
     if (!supabase) return;
 
     try {
-      // 1. Base64 사진을 파일(Blob)로 변환
       const byteString = atob(base64Photo.split(',')[1]);
       const ab = new ArrayBuffer(byteString.length);
       const ia = new Uint8Array(ab);
       for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
       const blob = new Blob([ab], { type: 'image/jpeg' });
 
-      // 2. 파일 이름 생성 (차량번호_날짜_시간.jpg)
       const fileName = `dispatch_${id}_${Date.now()}.jpg`;
 
-      // 3. Supabase로 업로드
       const { data, error } = await supabase.storage
-        .from('operation_photos') // 바구니 이름
+        .from('operation_photos')
         .upload(fileName, blob);
 
       if (error) {
         console.error('Supabase 업로드 실패:', error);
       } else {
-        console.log('✅ Supabase 업로드 성공 (NAS가 수거해갈 예정):', fileName);
+        console.log('✅ Supabase 업로드 성공:', fileName);
         triggerNotification("사진 전송 완료", "본부 서버로 사진이 안전하게 전송되었습니다.");
       }
     } catch (err) {
@@ -237,12 +227,10 @@ const App: React.FC = () => {
   const handleUpdateDispatchStatus = async (id: string, status: 'pending' | 'sent' | 'completed', photo?: string, manualQuantity?: number) => {
     setDispatches(prev => prev.map(d => d.id === id ? { ...d, status } : d));
     
-    // 연동된 운행 내역 업데이트
     if (status === 'completed') {
       const dispatch = dispatches.find(d => d.id === id);
       if (dispatch) {
         
-        // ★★★ [추가됨] 사진이 있으면 Supabase로 전송 (NAS 수거용) ★★★
         if (photo) {
            uploadPhotoToSupabase(id, photo);
         }
@@ -266,7 +254,6 @@ const App: React.FC = () => {
           return op;
         }));
 
-        // 사진이 있고 수동 입력이 없는 경우 AI 추출 시도 (기존 기능 유지)
         if (photo && !manualQuantity) {
           triggerNotification("📄 송장 처리 중", "AI가 송장에서 중량을 추출하고 있습니다...");
           const extractedWeight = await extractWeightFromImage(photo);
@@ -426,9 +413,8 @@ const App: React.FC = () => {
   const filteredNavItems = NAV_ITEMS.filter(item => item.roles.includes(user?.role || ''));
   const finalNavItems = user?.role === 'ADMIN' ? [{ label: '대시보드', value: ViewType.DASHBOARD, category: '목록관리', roles: ['ADMIN'] }, ...filteredNavItems] : filteredNavItems;
 
-return (
+  return (
     <div className={`h-screen flex flex-col transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-950' : 'bg-slate-100'} overflow-hidden`}>
-      
       <style>{globalStyle}</style>
 
       {user && <Header user={user} onLogout={handleLogout} onUpdatePassword={(c, n) => {
@@ -468,5 +454,6 @@ return (
       </div>
     </div>
   );
+};
 
 export default App;

@@ -1,7 +1,5 @@
 // @ts-nocheck
-import React, { useState, useEffect, useCallback, useRef, createContext, useContext } from 'react';
-import { GoogleGenAI } from "@google/genai";
-import { createClient } from '@supabase/supabase-js'; 
+import React, { useState, useEffect } from 'react';
 import { ViewType, Operation, Client, Vehicle, AuthUser, Dispatch, AdminAccount, UnitPriceMaster, Snippet } from './types';
 import { NAV_ITEMS, MOCK_OPERATIONS, MOCK_CLIENTS, MOCK_VEHICLES, MOCK_ADMINS, MOCK_UNIT_PRICES, MOCK_SNIPPETS } from './constants';
 
@@ -17,51 +15,26 @@ import VehicleTrackingView from './components/VehicleTrackingView';
 import DispatchManagementView from './components/DispatchManagementView';
 import AccountManagementView from './components/AccountManagementView';
 import DashboardView from './components/DashboardView';
-import ChangePasswordView from './components/ChangePasswordView';
 import LoginView from './components/LoginView';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 
-// 1. 모바일 레이아웃 고정 스타일
 const globalStyle = `
   @media (max-width: 600px) {
     #root { flex-direction: column !important; }
-    aside {
-      width: 100% !important; height: auto !important; min-height: 60px !important;
-      padding: 5px !important; border-right: none !important; border-bottom: 2px solid #ddd !important;
-    }
-    aside nav { flex-direction: row !important; justify-content: space-around !important; gap: 10px !important; }
-    main { width: 100% !important; padding: 10px !important; overflow-x: auto !important; }
-    body, html { font-size: 20px !important; }
-    input, select { 
-      height: 55px !important; font-size: 22px !important; 
-      color: black !important; border: 2px solid black !important; background-color: white !important;
-    }
-    button { min-height: 60px !important; font-size: 20px !important; font-weight: bold !important; }
+    aside { width: 100% !important; height: auto !important; padding: 5px !important; border-bottom: 2px solid #ddd !important; }
+    aside nav { flex-direction: row !important; justify-content: space-around !important; }
+    main { width: 100% !important; padding: 10px !important; }
   }
 `;
 
-// 2. 인증 컨텍스트 설정 (LoginView 에러 해결 핵심)
-const AuthContext = createContext<any>(null);
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within an AuthProvider");
-  return context;
-};
-
-const SUPABASE_URL = 'https://jvzeonopbybtqnyyboje.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_CX1kIgpV8nNIQZJHJYEcBw_BRPzf3D8';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
 const App: React.FC = () => {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  // 1. 로그인 상태 (처음부터 마스터로 로그인된 상태로 설정)
+  const [user, setUser] = useState<AuthUser | null>({ id: 'master', role: 'ADMIN', name: '마스터', identifier: '0000' });
   const [currentView, setCurrentView] = useState<ViewType>(ViewType.DASHBOARD);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
-  const [leftSidebarWidth, setLeftSidebarWidth] = useState(240);
 
-  // 데이터 상태 관리
+  // 2. 데이터 상태 (기존 MOCK 데이터를 기본값으로 설정하여 '예전 것'이 나오게 함)
   const [operations, setOperations] = useState<Operation[]>(MOCK_OPERATIONS);
   const [clients, setClients] = useState<Client[]>(MOCK_CLIENTS);
   const [vehicles, setVehicles] = useState<Vehicle[]>(MOCK_VEHICLES);
@@ -70,58 +43,52 @@ const App: React.FC = () => {
   const [dispatches, setDispatches] = useState<Dispatch[]>([]);
   const [adminAccounts, setAdminAccounts] = useState<AdminAccount[]>(MOCK_ADMINS);
 
-  // 로그인 로직
-  const handleLogin = (identifier: string, password?: string) => {
-    if (identifier === '0000' && password === '0000') {
-      setUser({ id: 'master', role: 'ADMIN', name: '마스터', identifier: '0000' });
-      return true;
-    }
-    const admin = adminAccounts.find(a => a.username === identifier && a.password === password);
-    if (admin) {
-      setUser({ id: admin.id, role: 'ADMIN', name: admin.name, identifier: admin.username });
-      return true;
-    }
-    const vehicle = vehicles.find(v => v.loginCode === identifier && (v.password === password || (!v.password && v.loginCode === password)));
-    if (vehicle) {
-      setUser({ id: vehicle.id, role: 'VEHICLE', name: vehicle.ownerName, identifier: vehicle.vehicleNo });
-      return true;
-    }
-    return false;
+  const handleLogin = (id: string, pw: string) => {
+    setUser({ id: 'master', role: 'ADMIN', name: '마스터', identifier: '0000' });
+    return true;
   };
 
-  const handleLogout = () => setUser(null);
-  const toggleTheme = () => setIsDarkMode(!isDarkMode);
-
-  // 화면 렌더링 함수
   const renderView = () => {
     if (!user) return <LoginView onLogin={handleLogin} />;
     
-    const props = { operations, clients, vehicles, unitPrices, snippets, dispatches, user, adminAccounts };
+    // 버튼 클릭 시 데이터를 변경하거나 화면을 바꾸는 함수들
+    const props = { 
+      operations, setOperations, 
+      clients, setClients, 
+      vehicles, setVehicles, 
+      unitPrices, setUnitPrices, 
+      snippets, setSnippets, 
+      dispatches, setDispatches, 
+      user, adminAccounts 
+    };
 
     switch (currentView) {
       case ViewType.DASHBOARD: return <DashboardView {...props} />;
+      case ViewType.OPERATION_ENTRY: 
+        return <OperationEntryView {...props} 
+          onAddOperation={(newOp) => setOperations([newOp, ...operations])}
+          onUpdateOperation={(upOp) => setOperations(operations.map(o => o.id === upOp.id ? upOp : o))}
+          onDeleteOperation={(id) => setOperations(operations.filter(o => o.id !== id))}
+        />;
       case ViewType.DISPATCH_MGMT: return <DispatchManagementView {...props} onUpdateStatus={() => {}} onAddDispatch={() => {}} onUpdateDispatch={() => {}} onDeleteDispatch={() => {}} />;
-      case ViewType.ACCOUNT_MGMT: return <AccountManagementView {...props} onSaveVehicle={() => {}} onDeleteVehicle={() => {}} onAddVehicle={() => {}} onAddAdmin={() => {}} onUpdateAdmin={() => {}} onDeleteAdmin={() => {}} />;
-      case ViewType.VEHICLE_TRACKING: return <VehicleTrackingView vehicles={vehicles} />;
+      case ViewType.CLIENT_REPORT: return <StatementView title="거래처 내역서" type="client" operations={operations} clients={clients} userRole={user.role} />;
+      case ViewType.VEHICLE_REPORT: return <StatementView title="차량거래 내역서" type="vehicle" operations={operations} clients={clients} userRole={user.role} />;
+      case ViewType.MASTER_CLIENT: return <MasterClientView clients={clients} onSave={(c) => setClients([...clients.filter(x => x.id !== c.id), c])} onDelete={(id) => setClients(clients.filter(x => x.id !== id))} />;
       default: return <DashboardView {...props} />;
     }
   };
 
-  const navItems = NAV_ITEMS.filter(item => item.roles.includes(user?.role || ''));
-
   return (
-    <AuthContext.Provider value={{ user, login: handleLogin, logout: handleLogout }}>
-      <div className={`h-screen flex flex-col ${isDarkMode ? 'dark bg-slate-950' : 'bg-slate-100'} overflow-hidden`}>
-        <style>{globalStyle}</style>
-        {user && <Header user={user} onLogout={handleLogout} isDarkMode={isDarkMode} onToggleTheme={toggleTheme} />}
-        <div className="flex flex-1 overflow-hidden flex-col md:flex-row">
-          {user && <Sidebar currentView={currentView} onViewChange={setCurrentView} navItems={navItems} width={leftSidebarWidth} />}
-          <main className="flex-1 p-1 overflow-auto">
-            {renderView()}
-          </main>
-        </div>
+    <div className={`h-screen flex flex-col ${isDarkMode ? 'dark bg-slate-950' : 'bg-slate-100'} overflow-hidden`}>
+      <style>{globalStyle}</style>
+      {user && <Header user={user} onLogout={() => setUser(null)} isDarkMode={isDarkMode} onToggleTheme={() => setIsDarkMode(!isDarkMode)} />}
+      <div className="flex flex-1 overflow-hidden">
+        {user && <Sidebar currentView={currentView} onViewChange={setCurrentView} navItems={NAV_ITEMS} width={240} />}
+        <main className="flex-1 p-2 overflow-auto">
+          {renderView()}
+        </main>
       </div>
-    </AuthContext.Provider>
+    </div>
   );
 };
 

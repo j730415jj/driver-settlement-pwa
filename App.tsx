@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { ViewType, Operation, Client, Vehicle, AuthUser, Dispatch, AdminAccount, UnitPriceMaster, Snippet } from './types';
 import { NAV_ITEMS, MOCK_OPERATIONS, MOCK_CLIENTS, MOCK_VEHICLES, MOCK_ADMINS, MOCK_UNIT_PRICES, MOCK_SNIPPETS } from './constants';
 
-// 컴포넌트 임포트
+// 모든 컴포넌트 임포트 (사진에 있는 모든 기능을 위해)
 import OperationEntryView from './components/OperationEntryView';
 import ClientSummaryView from './components/ClientSummaryView';
 import StatementView from './components/StatementView';
@@ -19,22 +19,42 @@ import LoginView from './components/LoginView';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 
+// [사진 b2a125.jpg 반영] 모바일에서 메뉴를 위로 올리고 글씨를 시원하게 키우는 스타일
 const globalStyle = `
   @media (max-width: 600px) {
     #root { flex-direction: column !important; }
-    aside { width: 100% !important; height: auto !important; padding: 5px !important; border-bottom: 2px solid #ddd !important; }
-    aside nav { flex-direction: row !important; justify-content: space-around !important; }
+    aside {
+      width: 100% !important; height: auto !important;
+      padding: 0 !important; border-right: none !important;
+      border-bottom: 2px solid #334155 !important;
+      order: -1 !important; /* 메뉴를 무조건 맨 위로 */
+    }
+    aside nav { 
+      flex-direction: row !important; 
+      flex-wrap: wrap !important;
+      justify-content: flex-start !important; 
+      gap: 5px !important; 
+      padding: 10px !important;
+    }
+    aside nav button {
+      padding: 8px 12px !important;
+      font-size: 14px !important;
+      background: #1e293b !important;
+      border: 1px solid #334155 !important;
+      border-radius: 8px !important;
+      white-space: nowrap !important;
+    }
     main { width: 100% !important; padding: 10px !important; }
+    body { font-size: 18px !important; }
   }
 `;
 
 const App: React.FC = () => {
-  // 1. 로그인 상태 (처음부터 마스터로 로그인된 상태로 설정)
   const [user, setUser] = useState<AuthUser | null>({ id: 'master', role: 'ADMIN', name: '마스터', identifier: '0000' });
   const [currentView, setCurrentView] = useState<ViewType>(ViewType.DASHBOARD);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
 
-  // 2. 데이터 상태 (기존 MOCK 데이터를 기본값으로 설정하여 '예전 것'이 나오게 함)
+  // 모든 데이터 원상복구
   const [operations, setOperations] = useState<Operation[]>(MOCK_OPERATIONS);
   const [clients, setClients] = useState<Client[]>(MOCK_CLIENTS);
   const [vehicles, setVehicles] = useState<Vehicle[]>(MOCK_VEHICLES);
@@ -43,48 +63,37 @@ const App: React.FC = () => {
   const [dispatches, setDispatches] = useState<Dispatch[]>([]);
   const [adminAccounts, setAdminAccounts] = useState<AdminAccount[]>(MOCK_ADMINS);
 
-  const handleLogin = (id: string, pw: string) => {
-    setUser({ id: 'master', role: 'ADMIN', name: '마스터', identifier: '0000' });
-    return true;
-  };
-
   const renderView = () => {
-    if (!user) return <LoginView onLogin={handleLogin} />;
+    if (!user) return <LoginView onLogin={() => true} />;
     
-    // 버튼 클릭 시 데이터를 변경하거나 화면을 바꾸는 함수들
-    const props = { 
-      operations, setOperations, 
-      clients, setClients, 
-      vehicles, setVehicles, 
-      unitPrices, setUnitPrices, 
-      snippets, setSnippets, 
-      dispatches, setDispatches, 
+    const commonProps = { 
+      operations, setOperations, clients, setClients, vehicles, setVehicles, 
+      unitPrices, setUnitPrices, snippets, setSnippets, dispatches, setDispatches, 
       user, adminAccounts 
     };
 
     switch (currentView) {
-      case ViewType.DASHBOARD: return <DashboardView {...props} />;
-      case ViewType.OPERATION_ENTRY: 
-        return <OperationEntryView {...props} 
-          onAddOperation={(newOp) => setOperations([newOp, ...operations])}
-          onUpdateOperation={(upOp) => setOperations(operations.map(o => o.id === upOp.id ? upOp : o))}
-          onDeleteOperation={(id) => setOperations(operations.filter(o => o.id !== id))}
-        />;
-      case ViewType.DISPATCH_MGMT: return <DispatchManagementView {...props} onUpdateStatus={() => {}} onAddDispatch={() => {}} onUpdateDispatch={() => {}} onDeleteDispatch={() => {}} />;
-      case ViewType.CLIENT_REPORT: return <StatementView title="거래처 내역서" type="client" operations={operations} clients={clients} userRole={user.role} />;
-      case ViewType.VEHICLE_REPORT: return <StatementView title="차량거래 내역서" type="vehicle" operations={operations} clients={clients} userRole={user.role} />;
-      case ViewType.MASTER_CLIENT: return <MasterClientView clients={clients} onSave={(c) => setClients([...clients.filter(x => x.id !== c.id), c])} onDelete={(id) => setClients(clients.filter(x => x.id !== id))} />;
-      default: return <DashboardView {...props} />;
+      case ViewType.DASHBOARD: return <DashboardView {...commonProps} />;
+      case ViewType.DISPATCH_MGMT: return <DispatchManagementView {...commonProps} />;
+      case ViewType.OPERATION_ENTRY: return <OperationEntryView {...commonProps} />;
+      case ViewType.CLIENT_REPORT: return <StatementView title="거래처 내역서" type="client" {...commonProps} />;
+      case ViewType.MASTER_CLIENT: return <MasterClientView {...commonProps} />;
+      case ViewType.MASTER_VEHICLE: return <MasterVehicleView {...commonProps} />;
+      case ViewType.MASTER_UNIT_PRICE: return <MasterUnitPriceView {...commonProps} />;
+      case ViewType.MASTER_SNIPPET: return <MasterSnippetView {...commonProps} />;
+      case ViewType.ACCOUNT_MGMT: return <AccountManagementView {...commonProps} />;
+      case ViewType.VEHICLE_TRACKING: return <VehicleTrackingView vehicles={vehicles} />;
+      default: return <DashboardView {...commonProps} />;
     }
   };
 
   return (
-    <div className={`h-screen flex flex-col ${isDarkMode ? 'dark bg-slate-950' : 'bg-slate-100'} overflow-hidden`}>
+    <div id="root" className={`h-screen flex flex-col ${isDarkMode ? 'dark bg-slate-950' : 'bg-slate-100'} overflow-hidden`}>
       <style>{globalStyle}</style>
       {user && <Header user={user} onLogout={() => setUser(null)} isDarkMode={isDarkMode} onToggleTheme={() => setIsDarkMode(!isDarkMode)} />}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden flex-col md:flex-row">
         {user && <Sidebar currentView={currentView} onViewChange={setCurrentView} navItems={NAV_ITEMS} width={240} />}
-        <main className="flex-1 p-2 overflow-auto">
+        <main className="flex-1 p-2 overflow-auto bg-slate-100 dark:bg-slate-950">
           {renderView()}
         </main>
       </div>

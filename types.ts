@@ -1,9 +1,8 @@
-// 공통 타입 정의 (사전)
 
-// 화면 종류
+export type UserRole = 'ADMIN' | 'VEHICLE';
+
 export enum ViewType {
   DASHBOARD = 'DASHBOARD',
-  DISPATCH_MGMT = 'DISPATCH_MGMT',
   OPERATION_ENTRY = 'OPERATION_ENTRY',
   CLIENT_SUMMARY = 'CLIENT_SUMMARY',
   CLIENT_REPORT = 'CLIENT_REPORT',
@@ -15,76 +14,114 @@ export enum ViewType {
   MASTER_UNIT_PRICE = 'MASTER_UNIT_PRICE',
   MASTER_SNIPPET = 'MASTER_SNIPPET',
   VEHICLE_TRACKING = 'VEHICLE_TRACKING',
+  ACCOUNT_MGMT = 'ACCOUNT_MGMT',
   CHANGE_PASSWORD = 'CHANGE_PASSWORD',
-  ACCOUNT_MGMT = 'ACCOUNT_MGMT' // 계정 관리 화면 추가됨
+  DISPATCH_MGMT = 'DISPATCH_MGMT'
 }
 
-// 사용자 정보 (로그인한 사람)
 export interface AuthUser {
   id: string;
-  role: 'ADMIN' | 'VEHICLE';
+  role: UserRole;
   name: string;
-  identifier: string;
+  identifier: string; // 차량번호 또는 아이디
 }
 
-// 관리자 계정 (비밀번호 포함)
+export type SettlementStatus = 'PENDING' | 'INVOICED' | 'PAID' | 'FAILED';
+
 export interface AdminAccount {
   id: string;
+  name: string;
   username: string;
-  password?: string; // 비밀번호 추가됨
-  name: string;
+  password: string;
   createdAt: string;
+  lastLogin?: string;
 }
 
-// 차량 정보 (비밀번호, 로그인코드 포함)
-export interface Vehicle {
+export interface UnitPriceMaster {
   id: string;
-  vehicleNo: string;
-  ownerName: string;
-  phone: string;
-  regNo?: string;
-  address?: string;
-  status?: string;
-  loginCode: string; // 로그인용 간편 코드
-  password?: string; // 비밀번호 추가됨
+  clientName: string;
+  origin: string;
+  destination: string;
+  item: string;
+  unitPrice: number;       // 차량 단가 (지불용)
+  clientUnitPrice: number; // 거래처 단가 (매출용)
 }
 
-// 거래처 정보
-export interface Client {
+export interface Snippet {
   id: string;
-  name: string;
-  businessNo?: string;
-  owner?: string;
-  contact?: string;
-  email?: string;
-  address?: string;
-  remarks?: string;
+  keyword: string;     // 호출 키워드
+  clientName: string;
+  origin: string;
+  destination: string;
+  item: string;
 }
 
-// 운행 내역 (배차 연동 포함)
 export interface Operation {
   id: string;
   date: string;
+  deliveryDate?: string;
   vehicleNo: string;
   clientName: string;
-  clientUnitPrice: number;
+  clientUnitPrice: number; 
   origin: string;
   destination: string;
-  itemCode: string;
-  item: string;
-  itemDescription?: string;
-  unitPrice: number;
+  itemCode: string;     
+  item: string;         
+  itemDescription: string; 
+  unitPrice: number;    
   quantity: number;
   supplyPrice: number;
   tax: number;
   totalAmount: number;
-  settlementStatus: 'PENDING' | 'COMPLETED';
-  isVatIncluded: boolean;
-  invoicePhoto?: string;
-  remarks?: string;
+  invoiceNo?: string;
+  isInvoiceIssued?: boolean; 
+  remarks?: string;          
+  invoicePhoto?: string;     
+  settlementStatus: SettlementStatus; 
+  isVatIncluded: boolean; 
 }
 
-// 배차 내역
+export interface Client {
+  id: string;
+  name: string;
+  regNo: string;
+  ceo: string;
+  address: string;
+  businessType: string;
+  category: string;
+  phone: string;
+  fax: string;
+  email: string;
+}
+
+export interface Expense {
+  id: string;
+  date: string;
+  category: '유류비' | '정비비' | '기타';
+  amount: number;
+  description: string;
+}
+
+export interface Vehicle {
+  id: string;
+  vehicleNo: string;
+  loginCode: string;
+  password?: string;
+  ownerName: string;
+  phone: string;
+  regNo: string;
+  address: string;
+  lat?: number;
+  lng?: number;
+  status: 'active' | 'idle' | 'maintenance';
+  speed?: number;
+  expenses?: Expense[]; // 여러 건의 지출 내역
+  // 하위 호환성을 위해 유지 (필요 시 제거 가능)
+  fuelCost?: number;
+  maintenanceCost?: number;
+  otherCost?: number;
+}
+
 export interface Dispatch {
   id: string;
   date: string;
@@ -93,25 +130,14 @@ export interface Dispatch {
   origin: string;
   destination: string;
   item: string;
+  count: number;
+  remarks: string;
   status: 'pending' | 'sent' | 'completed';
 }
 
-// 단가표 관리
-export interface UnitPriceMaster {
-  id: string;
-  origin: string;
-  destination: string;
-  item: string;
-  unitPrice: number;
-  clientUnitPrice: number;
-}
-
-// 자동완성 문구 (스니펫)
-export interface Snippet {
-  id: string;
-  keyword: string;
+export interface SummaryData {
   clientName: string;
-  origin: string;
-  destination: string;
-  item: string;
+  depositAmount: number;
+  payoutAmount: number;
+  margin: number;
 }

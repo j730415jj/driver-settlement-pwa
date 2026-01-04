@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Vehicle, AdminAccount } from '../types';
 
@@ -223,7 +224,7 @@ const AccountManagementView: React.FC<Props> = ({
         </div>
       )}
 
-      <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-x-auto">
+      <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
         <table className="w-full text-left">
           <thead className="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-[0.2em] border-b">
             <tr>
@@ -248,13 +249,14 @@ const AccountManagementView: React.FC<Props> = ({
                     {editingPwId === v.id ? (
                       <div className="flex items-center justify-center space-x-2">
                         <input 
-                          type="text" 
-                          value={tempPw} 
-                          onChange={e => setTempPw(e.target.value)}
-                          className="border-2 border-black rounded-lg px-3 py-2 text-lg text-black font-bold outline-none w-40"
-                          style={{ backgroundColor: 'white', color: 'black' }}
-                          autoFocus 
-                        />
+<input 
+  type="text" 
+  value={tempPw} 
+  onChange={e => setTempPw(e.target.value)}
+  className="border-2 border-black rounded-lg px-3 py-2 text-lg text-black font-bold outline-none w-40"
+  style={{ backgroundColor: 'white', color: 'black' }}
+  autoFocus 
+/>
                         <button onClick={() => saveEditedPw('VEHICLE', v.id)} className="bg-blue-600 text-white p-1.5 rounded-lg hover:bg-blue-700 transition">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                         </button>
@@ -271,20 +273,21 @@ const AccountManagementView: React.FC<Props> = ({
                   </td>
                   <td className="px-8 py-5 text-center">
                     <div className="flex justify-center space-x-2">
-                      <button
-                        onClick={() => startEditPw(v.id, v.password)}
-                        className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
-                        style={{ fontSize: '15px', fontWeight: 'bold', minWidth: '70px' }}
-                      >
-                        비번변경
+<button
+  onClick={() => startEditPw(v.id, v.password)}
+  className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
+  style={{ fontSize: '15px', fontWeight: 'bold', minWidth: '70px' }}
+>
+  비번변경
+</button>                     
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
                       </button>
                       <button 
                         onClick={() => { if(window.confirm(`${v.vehicleNo} 차량 계정을 삭제하시겠습니까?`)) onDeleteVehicle(v.id); }} 
-                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 ml-2"
-                        style={{ fontSize: '15px', fontWeight: 'bold', minWidth: '50px' }}
+                        className="text-slate-400 hover:text-red-500 p-2 rounded-xl hover:bg-red-50 transition-all"
                         title="계정 삭제"
                       >
-                        삭제
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                       </button>
                     </div>
                   </td>
@@ -306,13 +309,14 @@ const AccountManagementView: React.FC<Props> = ({
                     {editingPwId === a.id ? (
                       <div className="flex items-center justify-center space-x-2">
                         <input 
-                          type="text" 
-                          value={tempPw} 
-                          onChange={e => setTempPw(e.target.value)}
-                          className="border-2 border-black rounded-lg px-3 py-2 text-lg text-black font-bold outline-none w-40"
-                          style={{ backgroundColor: 'white', color: 'black' }}
-                          autoFocus 
-                        />
+  type="text" 
+  value={tempPw} 
+  onChange={e => setTempPw(e.target.value)}
+  /* 글씨를 키우고(text-lg), 테두리와 글자를 검정색(black)으로 변경했습니다 */
+  className="border-2 border-black rounded-lg px-3 py-2 text-lg text-black font-bold outline-none w-40"
+  style={{ backgroundColor: 'white', color: 'black' }} /* 배경 하얗게, 글자 검정 확실히 */
+  autoFocus 
+/>
                         <button onClick={() => saveEditedPw('ADMIN', a.id)} className="bg-indigo-600 text-white p-1.5 rounded-lg hover:bg-indigo-700 transition">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                         </button>
@@ -328,25 +332,24 @@ const AccountManagementView: React.FC<Props> = ({
                   </td>
                   <td className="px-8 py-5 text-center">
                     <div className="flex justify-center space-x-2">
-                        <button
-                          onClick={() => startEditPw(a.id, a.password)}
-                          className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
-                          style={{ fontSize: '15px', fontWeight: 'bold', minWidth: '70px' }}
-                        >
-                          비번변경
-                        </button>
-                        <button 
-                          onClick={() => { 
-                            if(a.id === 'admin-master') return alert('마스터 계정은 시스템 보호를 위해 삭제가 제한됩니다.'); 
-                            if(window.confirm(`${a.name} 관리자 계정을 영구적으로 삭제하시겠습니까?`)) onDeleteAdmin(a.id); 
-                          }} 
-                          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 ml-2"
-                          style={{ fontSize: '15px', fontWeight: 'bold', minWidth: '50px' }}
-                          disabled={a.id === 'admin-master'}
-                          title="관리자 삭제"
-                        >
-                          삭제
-                        </button>
+                       <button 
+                        onClick={() => startEditPw(a.id, a.password)}
+                        className="text-slate-400 hover:text-indigo-600 p-2 rounded-xl hover:bg-indigo-50 transition-all"
+                        title="관리자 비번 수정"
+                       >
+                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                       </button>
+                       <button 
+                        onClick={() => { 
+                          if(a.id === 'admin-master') return alert('마스터 계정은 시스템 보호를 위해 삭제가 제한됩니다.'); 
+                          if(window.confirm(`${a.name} 관리자 계정을 영구적으로 삭제하시겠습니까?`)) onDeleteAdmin(a.id); 
+                        }} 
+                        className={`p-2 rounded-xl transition-all ${a.id === 'admin-master' ? 'text-slate-200 cursor-not-allowed' : 'text-slate-400 hover:text-red-500 hover:bg-red-50'}`}
+                        disabled={a.id === 'admin-master'}
+                        title="관리자 삭제"
+                       >
+                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                       </button>
                     </div>
                   </td>
                 </tr>
